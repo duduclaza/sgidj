@@ -64,7 +64,7 @@ $getStatusColorClass = function($statusName, $statuses) {
   #melhorias-table th {
     position: relative;
     white-space: nowrap;
-    overflow: visible; /* precisa ser visible para o resizer não ser cortado */
+    overflow: hidden;
     user-select: none;
     border-right: 1px solid #e2e8f0;
   }
@@ -78,46 +78,48 @@ $getStatusColorClass = function($statusName, $statuses) {
   #melhorias-table td:last-child {
     border-right: none;
   }
-  /* Primeira coluna: permite texto em múltiplas linhas ao encolher */
-  #melhorias-table td.col-sticky {
-    position: sticky;
-    left: 0;
-    z-index: 20;
-    background: #ffffff;
-    box-shadow: 2px 0 4px rgba(0,0,0,0.06);
-    white-space: normal !important;  /* quebra o texto */
-    overflow: visible !important;
-    text-overflow: clip !important;
-    word-break: break-word;
-    vertical-align: top;
-  }
-  /* Garantir que o th da 1ª coluna também encolhe */
+  /* Primeira coluna sticky - th */
   #melhorias-table th.col-sticky {
     position: sticky;
     left: 0;
     z-index: 30;
     background: #f8fafc;
-    box-shadow: 2px 0 4px rgba(0,0,0,0.06);
-    overflow: visible;
+    overflow: visible; /* soó a primeira coluna pode mostrar o resizer fora dela */
+    /* Sombra suave na lateral direita */
+    box-shadow: 4px 0 10px -2px rgba(0,0,0,0.15), 1px 0 0 0 #e2e8f0;
+  }
+  /* Primeira coluna sticky - td */
+  #melhorias-table td.col-sticky {
+    position: sticky;
+    left: 0;
+    z-index: 20;
+    background: #ffffff;
+    white-space: normal;
+    overflow: hidden;
+    overflow-wrap: anywhere; /* quebra em qualquer ponto, até dentro de palavras longas */
+    word-break: break-all;
+    vertical-align: top;
+    box-shadow: 4px 0 10px -2px rgba(0,0,0,0.15), 1px 0 0 0 #e2e8f0;
   }
   /* Os th normais ficam abaixo da coluna sticky */
   #melhorias-table thead th:not(.col-sticky) {
     z-index: 1;
     position: relative;
   }
+  /* Resizer de todas as colunas */
   #melhorias-table th .resizer {
     position: absolute;
-    right: -3px;
+    right: 0;
     top: 0;
     height: 100%;
-    width: 6px;
+    width: 8px;
     cursor: col-resize;
     background: transparent;
-    z-index: 40;
+    z-index: 50;
   }
   #melhorias-table th .resizer:hover,
   #melhorias-table th .resizer.active {
-    background: rgba(99, 102, 241, 0.5);
+    background: rgba(99, 102, 241, 0.45);
     border-radius: 3px;
   }
   #melhorias-table {
@@ -233,39 +235,38 @@ $getStatusColorClass = function($statusName, $statuses) {
 
     if (!table || !scrollContainer || !topBar || !topInner) return;
 
-    const headers = table.querySelectorAll('thead th');
+    const headers = Array.from(table.querySelectorAll('thead th'));
 
-    // Função para atualizar a largura do inner da barra do topo
+    // Atualizar a largura do inner da barra do topo
     function syncTopBarWidth() {
-        topInner.style.width = table.offsetWidth + 'px';
+        topInner.style.width = table.scrollWidth + 'px';
     }
 
-    // Sincronizar scroll: topo → container
-    let syncingFromTop = false, syncingFromBottom = false;
+    // Sincronizar scroll: topo ↔ container
+    let syncing = false;
     topBar.addEventListener('scroll', () => {
-        if (syncingFromBottom) return;
-        syncingFromTop = true;
+        if (syncing) return; syncing = true;
         scrollContainer.scrollLeft = topBar.scrollLeft;
-        syncingFromTop = false;
+        syncing = false;
     });
-
-    // Sincronizar scroll: container → topo
     scrollContainer.addEventListener('scroll', () => {
-        if (syncingFromTop) return;
-        syncingFromBottom = true;
+        if (syncing) return; syncing = true;
         topBar.scrollLeft = scrollContainer.scrollLeft;
-        syncingFromBottom = false;
+        syncing = false;
     });
 
-    // Restaurar larguras salvas
+    // Restaurar larguras salvas do localStorage
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
     headers.forEach((th, i) => {
         const w = saved[i];
-        if (w) th.style.width = w + 'px';
+        if (w) {
+            th.style.width = w + 'px';
+            th.style.minWidth = w + 'px';
+        }
     });
     syncTopBarWidth();
 
-    // Inicializar redimensionamento
+    // Inicializar resizer em cada coluna
     headers.forEach((th, index) => {
         const resizer = th.querySelector('.resizer');
         if (!resizer) return;
@@ -274,34 +275,40 @@ $getStatusColorClass = function($statusName, $statuses) {
 
         resizer.addEventListener('mousedown', function (e) {
             e.preventDefault();
-            startX = e.pageX;
-            startWidth = th.offsetWidth;
+            e.stopPropagation();
+            startX = e.clientX;
+            startWidth = th.getBoundingClientRect().width;
             resizer.classList.add('active');
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
         });
 
         function onMouseMove(e) {
-            const newWidth = Math.max(60, startWidth + (e.pageX - startX));
+            const diff = e.clientX - startX;
+            const newWidth = Math.max(60, startWidth + diff);
             th.style.width = newWidth + 'px';
-            syncTopBarWidth(); // atualizar barra do topo ao redimensionar
+            th.style.minWidth = newWidth + 'px';
+            syncTopBarWidth();
         }
 
         function onMouseUp() {
             resizer.classList.remove('active');
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
             document.removeEventListener('mousemove', onMouseMove);
             document.removeEventListener('mouseup', onMouseUp);
 
-            // Salvar todas as larguras no localStorage
+            // Salvar larguras
             const widths = {};
-            headers.forEach((h, i) => { widths[i] = h.offsetWidth; });
+            headers.forEach((h, i) => { widths[i] = Math.round(h.getBoundingClientRect().width); });
             localStorage.setItem(STORAGE_KEY, JSON.stringify(widths));
             syncTopBarWidth();
         }
     });
 
-    // Garantir atualização após renderização
     window.addEventListener('resize', syncTopBarWidth);
-    setTimeout(syncTopBarWidth, 100);
+    setTimeout(syncTopBarWidth, 150);
 })();
 </script>
