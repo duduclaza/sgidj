@@ -61,14 +61,13 @@ $getStatusColorClass = function($statusName, $statuses) {
 
 <!-- Grid / Table -->
 <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-    <table class="w-full min-w-[1500px] text-left text-sm">
+    <table class="w-full text-left text-sm">
         <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-500">
             <tr>
                 <th class="sticky left-0 z-10 bg-slate-50 px-6 py-4 shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">Ticket / Título</th>
                 <th class="px-6 py-4">Área / Setor</th>
                 <th class="px-6 py-4">Responsável</th>
                 <th class="px-6 py-4">Abertura</th>
-                <th colspan="3" class="px-6 py-4 text-center border-x border-slate-200/60">Descrição da Melhoria</th>
                 <th class="px-6 py-4">O Quê?</th>
                 <th class="px-6 py-4">Quem?</th>
                 <th class="px-6 py-4">Onde?</th>
@@ -94,11 +93,6 @@ $getStatusColorClass = function($statusName, $statuses) {
                     </td>
                     <td class="px-6 py-4 text-slate-600"><?= e($item['responsavel_preenchimento'] ?: $item['responsavel_nome']) ?></td>
                     <td class="px-6 py-4 text-slate-600 whitespace-nowrap"><?= $item['data_abertura'] ? date('d/m/Y', strtotime($item['data_abertura'])) : '-' ?></td>
-                    
-                    <!-- Acompanhamento -->
-                    <td class="px-6 py-4 text-slate-500 max-w-xs truncate" title="<?= e($item['descricao_problema']) ?>"><?= e($item['descricao_problema']) ?></td>
-                    <td class="px-6 py-4 text-slate-500 max-w-xs truncate" title="<?= e($item['melhoria_sugerida']) ?>"><?= e($item['melhoria_sugerida']) ?></td>
-                    <td class="px-6 py-4 text-slate-500 max-w-xs truncate" title="<?= e($item['resultado_esperado']) ?>"><?= e($item['resultado_esperado']) ?></td>
 
                     <!-- 5W2H -->
                     <td class="px-6 py-4 text-slate-500 max-w-xs truncate" title="<?= e($item['o_que']) ?>"><?= e($item['o_que']) ?></td>
@@ -136,7 +130,7 @@ $getStatusColorClass = function($statusName, $statuses) {
             <?php endforeach; ?>
             <?php if (empty($improvements)): ?>
                 <tr>
-                    <td colspan="16" class="px-6 py-12 text-center text-slate-500">Nenhuma melhoria encontrada.</td>
+                    <td colspan="13" class="px-6 py-12 text-center text-slate-500">Nenhuma melhoria encontrada.</td>
                 </tr>
             <?php endif; ?>
         </tbody>
