@@ -78,20 +78,27 @@ $getStatusColorClass = function($statusName, $statuses) {
   #melhorias-table td:last-child {
     border-right: none;
   }
-  /* Coluna sticky com z-index maior que as demais */
-  #melhorias-table th.col-sticky {
-    position: sticky;
-    left: 0;
-    z-index: 30; /* maior que os th normais */
-    background: #f8fafc;
-    box-shadow: 2px 0 4px rgba(0,0,0,0.06);
-  }
+  /* Primeira coluna: permite texto em múltiplas linhas ao encolher */
   #melhorias-table td.col-sticky {
     position: sticky;
     left: 0;
     z-index: 20;
     background: #ffffff;
     box-shadow: 2px 0 4px rgba(0,0,0,0.06);
+    white-space: normal !important;  /* quebra o texto */
+    overflow: visible !important;
+    text-overflow: clip !important;
+    word-break: break-word;
+    vertical-align: top;
+  }
+  /* Garantir que o th da 1ª coluna também encolhe */
+  #melhorias-table th.col-sticky {
+    position: sticky;
+    left: 0;
+    z-index: 30;
+    background: #f8fafc;
+    box-shadow: 2px 0 4px rgba(0,0,0,0.06);
+    overflow: visible;
   }
   /* Os th normais ficam abaixo da coluna sticky */
   #melhorias-table thead th:not(.col-sticky) {
@@ -145,7 +152,7 @@ $getStatusColorClass = function($statusName, $statuses) {
     <table id="melhorias-table" class="text-left text-sm" style="width:max-content; min-width:100%">
         <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-500">
             <tr>
-                <th class="col-sticky px-4 py-4" style="min-width:180px">Ticket / Título<div class="resizer"></div></th>
+                <th class="col-sticky px-4 py-4" style="width:200px">Ticket / Título<div class="resizer"></div></th>
                 <th class="px-4 py-4" style="min-width:120px">Área / Setor<div class="resizer"></div></th>
                 <th class="px-4 py-4" style="min-width:120px">Responsável<div class="resizer"></div></th>
                 <th class="px-4 py-4" style="min-width:100px">Abertura<div class="resizer"></div></th>
