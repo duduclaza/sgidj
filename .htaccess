@@ -1,0 +1,16 @@
+Options -Indexes
+
+<FilesMatch "^(\.env|\.env\..*|composer\.(json|lock)|README\.md|database\.sql)$">
+    Require all denied
+</FilesMatch>
+
+RewriteEngine On
+
+# Proteger diretórios internos
+RewriteRule ^(app|config|database|routes|storage|vendor|views)(/|$) - [F,L]
+RewriteRule ^public/index\.php$ - [F,L]
+
+# Servir arquivos estáticos existentes diretamente
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]

@@ -1,0 +1,14 @@
+{
+  "name": "empresa/sistema-melhoria-continua",
+  "description": "Sistema de Melhoria Contínua em PHP",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    },
+    "files": [
+      "app/Helpers/functions.php"
+    ]
+  },
+  "require": {}
+}
