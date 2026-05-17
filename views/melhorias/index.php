@@ -13,6 +13,10 @@ $getStatusColorClass = function($statusName, $statuses) {
         <p class="text-sm text-slate-500">Gerencie todos os projetos e planos de ação de melhoria.</p>
     </div>
     <div class="flex items-center gap-3">
+        <button id="btn-reset-cols" onclick="localStorage.removeItem('melhorias_col_widths'); location.reload()" class="flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-50 transition-colors" title="Resetar largura das colunas">
+            <i data-lucide="columns" class="h-3.5 w-3.5"></i>
+            Resetar Colunas
+        </button>
         <a href="<?= url('/melhorias/nova') ?>" class="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-colors">
             <i data-lucide="plus" class="h-4 w-4"></i>
             Nova Melhoria
@@ -261,7 +265,7 @@ $getStatusColorClass = function($statusName, $statuses) {
         const w = saved[i];
         if (w) {
             th.style.width = w + 'px';
-            th.style.minWidth = w + 'px';
+            // NÃO definir minWidth no restore para não travar redimensionamento
         }
     });
     syncTopBarWidth();
