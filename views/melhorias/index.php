@@ -89,9 +89,32 @@ $getStatusColorClass = function($statusName, $statuses) {
   #melhorias-table {
     table-layout: fixed;
   }
+  /* Barra de rolagem no topo */
+  #top-scroll-bar {
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 12px;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid #e2e8f0;
+    border-bottom: none;
+    background: #f8fafc;
+  }
+  #top-scroll-bar::-webkit-scrollbar { height: 8px; }
+  #top-scroll-bar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 8px; }
+  #top-scroll-bar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 8px; }
+  #top-scroll-bar::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+  #table-scroll-container::-webkit-scrollbar { height: 8px; }
+  #table-scroll-container::-webkit-scrollbar-track { background: #f1f5f9; }
+  #table-scroll-container::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 8px; }
+  #table-scroll-container::-webkit-scrollbar-thumb:hover { background: #6366f1; }
 </style>
 
-<div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+<!-- Barra de rolagem no TOPO -->
+<div id="top-scroll-bar" class="mb-0">
+    <div id="top-scroll-inner" style="height:1px"></div>
+</div>
+
+<div id="table-scroll-container" class="overflow-x-auto rounded-b-xl rounded-tr-xl border border-slate-200 bg-white shadow-sm">
     <table id="melhorias-table" class="text-left text-sm" style="width:max-content; min-width:100%">
         <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-500">
             <tr>
@@ -170,9 +193,35 @@ $getStatusColorClass = function($statusName, $statuses) {
 (function () {
     const STORAGE_KEY = 'melhorias_col_widths';
     const table = document.getElementById('melhorias-table');
-    if (!table) return;
+    const scrollContainer = document.getElementById('table-scroll-container');
+    const topBar = document.getElementById('top-scroll-bar');
+    const topInner = document.getElementById('top-scroll-inner');
+
+    if (!table || !scrollContainer || !topBar || !topInner) return;
 
     const headers = table.querySelectorAll('thead th');
+
+    // Função para atualizar a largura do inner da barra do topo
+    function syncTopBarWidth() {
+        topInner.style.width = table.offsetWidth + 'px';
+    }
+
+    // Sincronizar scroll: topo → container
+    let syncingFromTop = false, syncingFromBottom = false;
+    topBar.addEventListener('scroll', () => {
+        if (syncingFromBottom) return;
+        syncingFromTop = true;
+        scrollContainer.scrollLeft = topBar.scrollLeft;
+        syncingFromTop = false;
+    });
+
+    // Sincronizar scroll: container → topo
+    scrollContainer.addEventListener('scroll', () => {
+        if (syncingFromTop) return;
+        syncingFromBottom = true;
+        topBar.scrollLeft = scrollContainer.scrollLeft;
+        syncingFromBottom = false;
+    });
 
     // Restaurar larguras salvas
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -180,6 +229,7 @@ $getStatusColorClass = function($statusName, $statuses) {
         const w = saved[i];
         if (w) th.style.width = w + 'px';
     });
+    syncTopBarWidth();
 
     // Inicializar redimensionamento
     headers.forEach((th, index) => {
@@ -193,7 +243,6 @@ $getStatusColorClass = function($statusName, $statuses) {
             startX = e.pageX;
             startWidth = th.offsetWidth;
             resizer.classList.add('active');
-
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
         });
@@ -201,6 +250,7 @@ $getStatusColorClass = function($statusName, $statuses) {
         function onMouseMove(e) {
             const newWidth = Math.max(60, startWidth + (e.pageX - startX));
             th.style.width = newWidth + 'px';
+            syncTopBarWidth(); // atualizar barra do topo ao redimensionar
         }
 
         function onMouseUp() {
@@ -212,7 +262,12 @@ $getStatusColorClass = function($statusName, $statuses) {
             const widths = {};
             headers.forEach((h, i) => { widths[i] = h.offsetWidth; });
             localStorage.setItem(STORAGE_KEY, JSON.stringify(widths));
+            syncTopBarWidth();
         }
     });
+
+    // Garantir atualização após renderização
+    window.addEventListener('resize', syncTopBarWidth);
+    setTimeout(syncTopBarWidth, 100);
 })();
 </script>
