@@ -88,9 +88,7 @@ $getStatusColorClass = function($statusName, $statuses) {
     left: 0;
     z-index: 30;
     background: #f8fafc;
-    overflow: visible; /* soó a primeira coluna pode mostrar o resizer fora dela */
-    /* Sombra suave na lateral direita */
-    box-shadow: 4px 0 10px -2px rgba(0,0,0,0.15), 1px 0 0 0 #e2e8f0;
+    overflow: visible;
   }
   /* Primeira coluna sticky - td */
   #melhorias-table td.col-sticky {
@@ -99,11 +97,23 @@ $getStatusColorClass = function($statusName, $statuses) {
     z-index: 20;
     background: #ffffff;
     white-space: normal;
-    overflow: hidden;
-    overflow-wrap: anywhere; /* quebra em qualquer ponto, até dentro de palavras longas */
-    word-break: break-all;
+    overflow: visible; /* permite que a sombra apareça fora da célula */
+    word-break: break-word;
+    overflow-wrap: anywhere;
     vertical-align: top;
-    box-shadow: 4px 0 10px -2px rgba(0,0,0,0.15), 1px 0 0 0 #e2e8f0;
+  }
+  /* SOMBRA: usa pseudo-elemento para aparecer por cima das células vizinhas */
+  #melhorias-table th.col-sticky::after,
+  #melhorias-table td.col-sticky::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -12px;
+    width: 12px;
+    height: 100%;
+    background: linear-gradient(to right, rgba(0,0,0,0.10), transparent);
+    pointer-events: none;
+    z-index: 1;
   }
   /* Os th normais ficam abaixo da coluna sticky */
   #melhorias-table thead th:not(.col-sticky) {
@@ -179,7 +189,7 @@ $getStatusColorClass = function($statusName, $statuses) {
                     <td class="col-sticky px-4 py-4">
                         <a href="<?= url('/melhorias/' . $item['id']) ?>" class="block">
                             <span class="text-xs font-bold text-indigo-600"><?= e($item['ticket']) ?></span>
-                            <div class="font-bold text-slate-900 truncate" title="<?= e($item['titulo']) ?>"><?= e($item['titulo']) ?></div>
+                            <div class="font-bold text-slate-900" style="white-space:normal; word-break:break-word;"><?= e($item['titulo']) ?></div>
                         </a>
                     </td>
                     <td class="px-4 py-4 text-slate-600" title="<?= e($item['departamento_nome'] ?: 'N/A') ?>"><?= e($item['departamento_nome'] ?: 'N/A') ?></td>
