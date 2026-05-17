@@ -64,27 +64,54 @@ $getStatusColorClass = function($statusName, $statuses) {
   #melhorias-table th {
     position: relative;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: visible; /* precisa ser visible para o resizer não ser cortado */
     user-select: none;
-  }
-  #melhorias-table th .resizer {
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 100%;
-    width: 5px;
-    cursor: col-resize;
-    background: transparent;
-    z-index: 20;
-  }
-  #melhorias-table th .resizer:hover,
-  #melhorias-table th .resizer.active {
-    background: rgba(99, 102, 241, 0.5);
+    border-right: 1px solid #e2e8f0;
   }
   #melhorias-table td {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    border-right: 1px solid #f1f5f9;
+  }
+  #melhorias-table th:last-child,
+  #melhorias-table td:last-child {
+    border-right: none;
+  }
+  /* Coluna sticky com z-index maior que as demais */
+  #melhorias-table th.col-sticky {
+    position: sticky;
+    left: 0;
+    z-index: 30; /* maior que os th normais */
+    background: #f8fafc;
+    box-shadow: 2px 0 4px rgba(0,0,0,0.06);
+  }
+  #melhorias-table td.col-sticky {
+    position: sticky;
+    left: 0;
+    z-index: 20;
+    background: #ffffff;
+    box-shadow: 2px 0 4px rgba(0,0,0,0.06);
+  }
+  /* Os th normais ficam abaixo da coluna sticky */
+  #melhorias-table thead th:not(.col-sticky) {
+    z-index: 1;
+    position: relative;
+  }
+  #melhorias-table th .resizer {
+    position: absolute;
+    right: -3px;
+    top: 0;
+    height: 100%;
+    width: 6px;
+    cursor: col-resize;
+    background: transparent;
+    z-index: 40;
+  }
+  #melhorias-table th .resizer:hover,
+  #melhorias-table th .resizer.active {
+    background: rgba(99, 102, 241, 0.5);
+    border-radius: 3px;
   }
   #melhorias-table {
     table-layout: fixed;
@@ -118,7 +145,7 @@ $getStatusColorClass = function($statusName, $statuses) {
     <table id="melhorias-table" class="text-left text-sm" style="width:max-content; min-width:100%">
         <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-500">
             <tr>
-                <th class="sticky left-0 z-10 bg-slate-50 px-4 py-4 shadow-[1px_0_0_0_rgba(0,0,0,0.05)]" style="min-width:180px">Ticket / Título<div class="resizer"></div></th>
+                <th class="col-sticky px-4 py-4" style="min-width:180px">Ticket / Título<div class="resizer"></div></th>
                 <th class="px-4 py-4" style="min-width:120px">Área / Setor<div class="resizer"></div></th>
                 <th class="px-4 py-4" style="min-width:120px">Responsável<div class="resizer"></div></th>
                 <th class="px-4 py-4" style="min-width:100px">Abertura<div class="resizer"></div></th>
@@ -136,7 +163,7 @@ $getStatusColorClass = function($statusName, $statuses) {
         <tbody class="divide-y divide-slate-100">
             <?php foreach ($improvements as $item): ?>
                 <tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="sticky left-0 z-10 bg-white px-4 py-4 shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">
+                    <td class="col-sticky px-4 py-4">
                         <a href="<?= url('/melhorias/' . $item['id']) ?>" class="block">
                             <span class="text-xs font-bold text-indigo-600"><?= e($item['ticket']) ?></span>
                             <div class="font-bold text-slate-900 truncate" title="<?= e($item['titulo']) ?>"><?= e($item['titulo']) ?></div>
