@@ -7,10 +7,26 @@
   <p class="mt-1 text-xs text-slate-400">Crie uma nova senha para sua conta</p>
 </div>
 
-<form method="post" action="<?= url("/redefinir-senha/{$code}") ?>" class="space-y-4" id="resetForm">
+<form method="post" action="<?= url("/redefinir-senha") ?>" class="space-y-4" id="resetForm">
   <?= csrf_field() ?>
 
   <div class="fade-up-2">
+    <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-slate-400">E-mail</label>
+    <div class="auth-field">
+      <input type="email" name="email" required autocomplete="email" placeholder="seu@email.com" id="reset-email" value="<?= e($email ?? '') ?>" <?= !empty($email) ? 'readonly class="opacity-75"' : '' ?>>
+      <span class="field-icon"><i data-lucide="mail" class="h-4 w-4"></i></span>
+    </div>
+  </div>
+
+  <div class="fade-up-2 pt-2">
+    <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-slate-400">Código de 6 dígitos</label>
+    <div class="auth-field">
+      <input type="text" name="codigo" required placeholder="000000" id="reset-code" maxlength="6" pattern="\d{6}" class="tracking-widest">
+      <span class="field-icon"><i data-lucide="hash" class="h-4 w-4"></i></span>
+    </div>
+  </div>
+
+  <div class="fade-up-2 pt-2">
     <label class="mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-slate-400">Nova Senha</label>
     <div class="auth-field">
       <input type="password" name="senha" required autocomplete="new-password" placeholder="Mínimo 6 caracteres" id="reset-password">

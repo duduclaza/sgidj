@@ -37,8 +37,8 @@ $router->get('/login', [AuthController::class, 'login']);
 $router->post('/login', [AuthController::class, 'authenticate']);
 $router->get('/recuperar-senha', [AuthController::class, 'forgot']);
 $router->post('/recuperar-senha', [AuthController::class, 'forgotSend']);
-$router->get('/redefinir-senha/{code}', [AuthController::class, 'reset']);
-$router->post('/redefinir-senha/{code}', [AuthController::class, 'resetUpdate']);
+$router->get('/redefinir-senha', [AuthController::class, 'reset']);
+$router->post('/redefinir-senha', [AuthController::class, 'resetUpdate']);
 $router->post('/logout', [AuthController::class, 'logout'], ['auth']);
 
 $router->get('/', [DashboardController::class, 'index'], ['auth']);
