@@ -59,51 +59,80 @@ $getStatusColorClass = function($statusName, $statuses) {
     </form>
 </div>
 
-<!-- Grid / Table -->
+<!-- Grid / Table com colunas redimensionáveis -->
+<style>
+  #melhorias-table th {
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    user-select: none;
+  }
+  #melhorias-table th .resizer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 5px;
+    cursor: col-resize;
+    background: transparent;
+    z-index: 20;
+  }
+  #melhorias-table th .resizer:hover,
+  #melhorias-table th .resizer.active {
+    background: rgba(99, 102, 241, 0.5);
+  }
+  #melhorias-table td {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  #melhorias-table {
+    table-layout: fixed;
+  }
+</style>
+
 <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-    <table class="w-full text-left text-sm">
+    <table id="melhorias-table" class="text-left text-sm" style="width:max-content; min-width:100%">
         <thead class="bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-500">
             <tr>
-                <th class="sticky left-0 z-10 bg-slate-50 px-6 py-4 shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">Ticket / Título</th>
-                <th class="px-6 py-4">Área / Setor</th>
-                <th class="px-6 py-4">Responsável</th>
-                <th class="px-6 py-4">Abertura</th>
-                <th class="px-6 py-4">O Quê?</th>
-                <th class="px-6 py-4">Quem?</th>
-                <th class="px-6 py-4">Onde?</th>
-                <th class="px-6 py-4">Por Quê?</th>
-                <th class="px-6 py-4">Quando?</th>
-                <th class="px-6 py-4">Como?</th>
-                <th class="px-6 py-4">Quanto</th>
-                <th class="px-6 py-4 text-center">Status</th>
-                <th class="px-6 py-4 text-right">Ações</th>
+                <th class="sticky left-0 z-10 bg-slate-50 px-4 py-4 shadow-[1px_0_0_0_rgba(0,0,0,0.05)]" style="min-width:180px">Ticket / Título<div class="resizer"></div></th>
+                <th class="px-4 py-4" style="min-width:120px">Área / Setor<div class="resizer"></div></th>
+                <th class="px-4 py-4" style="min-width:120px">Responsável<div class="resizer"></div></th>
+                <th class="px-4 py-4" style="min-width:100px">Abertura<div class="resizer"></div></th>
+                <th class="px-4 py-4" style="min-width:150px">O Quê?<div class="resizer"></div></th>
+                <th class="px-4 py-4" style="min-width:120px">Quem?<div class="resizer"></div></th>
+                <th class="px-4 py-4" style="min-width:120px">Onde?<div class="resizer"></div></th>
+                <th class="px-4 py-4" style="min-width:150px">Por Quê?<div class="resizer"></div></th>
+                <th class="px-4 py-4" style="min-width:100px">Quando?<div class="resizer"></div></th>
+                <th class="px-4 py-4" style="min-width:150px">Como?<div class="resizer"></div></th>
+                <th class="px-4 py-4" style="min-width:100px">Quanto<div class="resizer"></div></th>
+                <th class="px-4 py-4 text-center" style="min-width:130px">Status<div class="resizer"></div></th>
+                <th class="px-4 py-4 text-right" style="min-width:100px">Ações</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
             <?php foreach ($improvements as $item): ?>
                 <tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="sticky left-0 z-10 bg-white px-6 py-4 shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">
+                    <td class="sticky left-0 z-10 bg-white px-4 py-4 shadow-[1px_0_0_0_rgba(0,0,0,0.05)]">
                         <a href="<?= url('/melhorias/' . $item['id']) ?>" class="block">
                             <span class="text-xs font-bold text-indigo-600"><?= e($item['ticket']) ?></span>
-                            <div class="font-bold text-slate-900 truncate max-w-[200px]" title="<?= e($item['titulo']) ?>"><?= e($item['titulo']) ?></div>
+                            <div class="font-bold text-slate-900 truncate" title="<?= e($item['titulo']) ?>"><?= e($item['titulo']) ?></div>
                         </a>
                     </td>
-                    <td class="px-6 py-4 text-slate-600">
-                        <?= e($item['departamento_nome'] ?: 'N/A') ?>
-                    </td>
-                    <td class="px-6 py-4 text-slate-600"><?= e($item['responsavel_preenchimento'] ?: $item['responsavel_nome']) ?></td>
-                    <td class="px-6 py-4 text-slate-600 whitespace-nowrap"><?= $item['data_abertura'] ? date('d/m/Y', strtotime($item['data_abertura'])) : '-' ?></td>
+                    <td class="px-4 py-4 text-slate-600" title="<?= e($item['departamento_nome'] ?: 'N/A') ?>"><?= e($item['departamento_nome'] ?: 'N/A') ?></td>
+                    <td class="px-4 py-4 text-slate-600" title="<?= e($item['responsavel_preenchimento'] ?: $item['responsavel_nome']) ?>"><?= e($item['responsavel_preenchimento'] ?: $item['responsavel_nome']) ?></td>
+                    <td class="px-4 py-4 text-slate-600"><?= $item['data_abertura'] ? date('d/m/Y', strtotime($item['data_abertura'])) : '-' ?></td>
 
                     <!-- 5W2H -->
-                    <td class="px-6 py-4 text-slate-500 max-w-xs truncate" title="<?= e($item['o_que']) ?>"><?= e($item['o_que']) ?></td>
-                    <td class="px-6 py-4 text-slate-600"><?= e($item['quem']) ?></td>
-                    <td class="px-6 py-4 text-slate-600"><?= e($item['onde']) ?></td>
-                    <td class="px-6 py-4 text-slate-500 max-w-xs truncate" title="<?= e($item['por_que']) ?>"><?= e($item['por_que']) ?></td>
-                    <td class="px-6 py-4 text-slate-600 whitespace-nowrap"><?= $item['quando'] ? date('d/m/Y', strtotime($item['quando'])) : '-' ?></td>
-                    <td class="px-6 py-4 text-slate-500 max-w-xs truncate" title="<?= e($item['como']) ?>"><?= e($item['como']) ?></td>
-                    <td class="px-6 py-4 text-slate-600">R$ <?= number_format($item['quanto'], 2, ',', '.') ?></td>
+                    <td class="px-4 py-4 text-slate-500" title="<?= e($item['o_que']) ?>"><?= e($item['o_que']) ?></td>
+                    <td class="px-4 py-4 text-slate-600" title="<?= e($item['quem']) ?>"><?= e($item['quem']) ?></td>
+                    <td class="px-4 py-4 text-slate-600" title="<?= e($item['onde']) ?>"><?= e($item['onde']) ?></td>
+                    <td class="px-4 py-4 text-slate-500" title="<?= e($item['por_que']) ?>"><?= e($item['por_que']) ?></td>
+                    <td class="px-4 py-4 text-slate-600"><?= $item['quando'] ? date('d/m/Y', strtotime($item['quando'])) : '-' ?></td>
+                    <td class="px-4 py-4 text-slate-500" title="<?= e($item['como']) ?>"><?= e($item['como']) ?></td>
+                    <td class="px-4 py-4 text-slate-600">R$ <?= number_format($item['quanto'], 2, ',', '.') ?></td>
                     
-                    <td class="px-6 py-4">
+                    <td class="px-4 py-4">
                         <form method="post" action="<?= url('/melhorias/' . $item['id'] . '/status') ?>" class="inline-block">
                             <?= csrf_field() ?>
                             <select name="status" onchange="this.form.submit()" class="rounded-full px-3 py-1 text-xs font-bold border-0 cursor-pointer focus:ring-2 focus:ring-indigo-500 <?= $getStatusColorClass($item['status'], $statuses) ?> text-white">
@@ -113,15 +142,15 @@ $getStatusColorClass = function($statusName, $statuses) {
                             </select>
                         </form>
                     </td>
-                    <td class="px-6 py-4 text-right">
+                    <td class="px-4 py-4 text-right">
                         <div class="flex justify-end items-center gap-2">
-                            <a href="<?= url('/melhorias/' . $item['id'] . '/editar') ?>" class="grid place-items-center h-10 w-10 rounded-xl bg-slate-50 text-slate-400 hover:bg-indigo-600 hover:text-white hover:shadow-lg hover:shadow-indigo-100 transition-all" title="Editar">
-                                <i data-lucide="edit-3" class="h-5 w-5"></i>
+                            <a href="<?= url('/melhorias/' . $item['id'] . '/editar') ?>" class="grid place-items-center h-9 w-9 rounded-xl bg-slate-50 text-slate-400 hover:bg-indigo-600 hover:text-white hover:shadow-lg hover:shadow-indigo-100 transition-all" title="Editar">
+                                <i data-lucide="edit-3" class="h-4 w-4"></i>
                             </a>
-                            <form method="post" action="<?= url('/melhorias/' . $item['id'] . '/excluir') ?>" onsubmit="return confirm('ATENÇÃO: Isso excluirá PERMANENTEMENTE esta melhoria e todos os seus dados vinculados (anexos, comentários, reuniões). Deseja continuar?')" class="inline">
+                            <form method="post" action="<?= url('/melhorias/' . $item['id'] . '/excluir') ?>" onsubmit="return confirm('ATENÇÃO: Isso excluirá PERMANENTEMENTE esta melhoria e todos os seus dados vinculados. Deseja continuar?')" class="inline">
                                 <?= csrf_field() ?>
-                                <button type="submit" class="grid place-items-center h-10 w-10 rounded-xl bg-slate-50 text-slate-400 hover:bg-red-600 hover:text-white hover:shadow-lg hover:shadow-red-100 transition-all" title="Excluir">
-                                    <i data-lucide="trash-2" class="h-5 w-5"></i>
+                                <button type="submit" class="grid place-items-center h-9 w-9 rounded-xl bg-slate-50 text-slate-400 hover:bg-red-600 hover:text-white hover:shadow-lg hover:shadow-red-100 transition-all" title="Excluir">
+                                    <i data-lucide="trash-2" class="h-4 w-4"></i>
                                 </button>
                             </form>
                         </div>
@@ -137,3 +166,53 @@ $getStatusColorClass = function($statusName, $statuses) {
     </table>
 </div>
 
+<script>
+(function () {
+    const STORAGE_KEY = 'melhorias_col_widths';
+    const table = document.getElementById('melhorias-table');
+    if (!table) return;
+
+    const headers = table.querySelectorAll('thead th');
+
+    // Restaurar larguras salvas
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    headers.forEach((th, i) => {
+        const w = saved[i];
+        if (w) th.style.width = w + 'px';
+    });
+
+    // Inicializar redimensionamento
+    headers.forEach((th, index) => {
+        const resizer = th.querySelector('.resizer');
+        if (!resizer) return;
+
+        let startX, startWidth;
+
+        resizer.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            startX = e.pageX;
+            startWidth = th.offsetWidth;
+            resizer.classList.add('active');
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+
+        function onMouseMove(e) {
+            const newWidth = Math.max(60, startWidth + (e.pageX - startX));
+            th.style.width = newWidth + 'px';
+        }
+
+        function onMouseUp() {
+            resizer.classList.remove('active');
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+
+            // Salvar todas as larguras no localStorage
+            const widths = {};
+            headers.forEach((h, i) => { widths[i] = h.offsetWidth; });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(widths));
+        }
+    });
+})();
+</script>
